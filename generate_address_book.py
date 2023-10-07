@@ -21,15 +21,23 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
 from math import ceil
-from tqdm import notebook
+from tqdm import tqdm, notebook
 import PIL.Image as Image
 
+
+# -----------------------------------------------------------------------------------
 # Need to pass a list for each service rather than just the string
 # See: https://stackoverflow.com/questions/16633297/google-drive-oauth-2-flow-giving-invalid-scope-error
 SCOPES = {
     'Sheet': ['https://www.googleapis.com/auth/spreadsheets.readonly'],
     'Drive': ['https://www.googleapis.com/auth/drive.readonly']
 }
+
+# -----------------------------------------------------------------------------------
+# The ID and range of the address book response spreadsheet.
+SPREADSHEET_ID = 'google_sheet_id'
+RANGE_NAME = 'target_sheet'
+
 
 # -----------------------------------------------------------------------------------
 # Service:
@@ -115,11 +123,8 @@ def tex_escape(text):
 
 
 
+# -----------------------------------------------------------------------------------
 creds = retrieve_credential('Sheet')
-
-# The ID and range of the address book response spreadsheet.
-SPREADSHEET_ID = '1hF_NiS2wqdRsRw5e8Md-kHjU0MpR6iIDu0eJLXnrPco'
-RANGE_NAME = 'Splitted Responses'
 
 # Using Google Sheet API to fetch the splitted response sheet
 service = build('sheets', 'v4', credentials=creds)
@@ -167,7 +172,7 @@ photo_header = """
 
 creds = retrieve_credential('Drive')
 file_list = []
-for key in notebook.tqdm(keys, position=0, leave=True):
+for key in tqdm(keys, position=0, leave=True):
     group = groups.get_group(key)
     fname = 'entries/{0:04d}-{1}.tex'.format(key, group.iloc[0]['last_name'])
     photoname = 'photos/{0:04d}-{1}.jpg'.format(key, group.iloc[0]['last_name'])
