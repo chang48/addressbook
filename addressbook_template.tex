@@ -1,0 +1,27 @@
+\documentclass[12pt, letterpaper, fontset=none]{ctexrep}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{anyfontsize}
+\usepackage{everypage}
+\usepackage{fontawesome}
+\usepackage{ctex}  % ctex can process both simplified and traditional Chinese fonts
+\geometry{left=1.5cm, top=0.2cm, right=0.5cm, bottom=0.9cm, footskip=.3cm}
+
+% Set up the Chinese font
+% \setCJKmainfont{Apple LiSung}
+\ctexset{fontset = macnew}
+\begin{document}
+\fontsize{11pt}{11pt}\selectfont
+\CJKfamily{zhkai}
+
+
+\begin{minipage}{\textwidth}
+\begin{tabular}{cc}
+    \input{entries/entry_template       }  &  \input{entries/entry_template          }\\
+    \input{entries/entry_template       }  &  \input{entries/entry_template          }\\
+    \input{entries/entry_template       }  &  \input{entries/entry_template          }\\
+\end{tabular}
+\end{minipage}
+
+\end{document}
