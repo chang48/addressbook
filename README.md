@@ -10,7 +10,12 @@ A simple workflow that generates a LaTeX address book. The workflow consists of 
   - Collects Google Forms responses
   - Use App Script to convert multi-section responses into rows with the common "Household Address" column. Because the Household Address
     is unique, this column will be used in pandas `groupby` operation, as explained in the following.
-- A python script that pulls the rows and write the contact info into `.tex` file for each addressbook entry. Here the converted responses
-  are imported as a pandas dataframe. Using the Household Address as `groupby` column, the code iterates over each household and outputs
-  address book entry in `.tex` format.
+- Python
+  - A python script that pulls the rows and write the contact info into `.tex` file for each addressbook entry. Here the converted responses
+    are imported as a pandas dataframe. Using the Household Address as `groupby` column, the code iterates over each household and outputs
+    address book entry in `.tex` format. Additionally, the code uses Google API to communicate with Google Sheet and Google Forms services.
+  
+Reference to the Google APIs:
+- [Google Sheet API python quick start](https://developers.google.com/sheets/api/quickstart/python)
+- [Google Drive API python quick start](https://developers.google.com/drive/api/quickstart/python)
  
