@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # coding: utf-8
-
 # Implement Google Sheet API for retrieving Address Book responses
 # 
 # Ref: 
@@ -8,9 +7,6 @@
 # - Drive API and sample: https://developers.google.com/drive/api/quickstart/python
 # - Drive API manage downloads: https://developers.google.com/drive/api/guides/manage-downloads
 # - Save downloaded image in bytes format to a file: https://stackoverflow.com/questions/18491416/pil-convert-bytearray-to-image
-
-# In[19]:
-
 
 from __future__ import print_function
 import os.path
@@ -27,10 +23,6 @@ from googleapiclient.http import MediaIoBaseDownload
 from math import ceil
 from tqdm import notebook
 import PIL.Image as Image
-
-
-# In[26]:
-
 
 # Need to pass a list for each service rather than just the string
 # See: https://stackoverflow.com/questions/16633297/google-drive-oauth-2-flow-giving-invalid-scope-error
@@ -122,32 +114,18 @@ def tex_escape(text):
     return regex.sub(lambda match: conv[match.group()], text)
 
 
-# In[3]:
-
 
 creds = retrieve_credential('Sheet')
-
-
-# In[4]:
-
 
 # The ID and range of the address book response spreadsheet.
 SPREADSHEET_ID = '1hF_NiS2wqdRsRw5e8Md-kHjU0MpR6iIDu0eJLXnrPco'
 RANGE_NAME = 'Splitted Responses'
-
-
-# In[5]:
-
 
 # Using Google Sheet API to fetch the splitted response sheet
 service = build('sheets', 'v4', credentials=creds)
 sheet = service.spreadsheets()
 result = sheet.values().get(spreadsheetId=SPREADSHEET_ID,
                             range=RANGE_NAME).execute()
-
-
-# In[34]:
-
 
 # Turn the results into a dataframe
 columns = ['date', 'street number', 'city', 'state', 'zip', 'photo', 'name_en', 'name_zh', 'phone', 'email']
@@ -160,23 +138,9 @@ data['address'] = data['street number'] + " " + data['city'] + ", " + data['stat
 # Retain a copy of the dataframe with only necessary columns
 df = data[['address', 'street number', 'city', 'state', 'zip', 'name_en', 'name_zh', 'phone', 'email', 'photo']].copy()
 
-
-# In[35]:
-
-
 # Process escaping LaTeX special characters
 df['phone'] = df['phone'].apply(tex_escape)
 df['email'] = df['email'].apply(tex_escape)
-
-
-# In[36]:
-
-
-df.head(5)
-
-
-# In[37]:
-
 
 # Group the contact info dataframe by household address then fetch data for the first household member
 df_tmp = df.groupby('address').first()
@@ -191,34 +155,17 @@ order = df_tmp.sort_values(by='last_name').reset_index().reset_index()[['address
 # Join the sorted index back to the original dataframe
 df = df.join(order.set_index('address'), on='address')
 
-
-# In[38]:
-
-
 # Now we group the dataframe by the index column. By defauly, groupby will sort the groups
 # according to the order determined by the index column. This is exactly what we want
 groups = df.groupby('index')
 keys = groups.groups.keys()
-
-
-# In[39]:
-
 
 photo_header = """
     \\begin{{figure}}[H]
        \\includegraphics[height=0.13\\textheight, width=\\textwidth, keepaspectratio]{{{0}}}
     \\end{{figure}}"""
 
-
-# In[40]:
-
-
 creds = retrieve_credential('Drive')
-
-
-# In[41]:
-
-
 file_list = []
 for key in notebook.tqdm(keys, position=0, leave=True):
     group = groups.get_group(key)
@@ -264,17 +211,6 @@ for key in notebook.tqdm(keys, position=0, leave=True):
     f.write('\\end{minipage}\n')
     f.close()
 
-
-# In[13]:
-
-
-# For testing purpose
-# file_list = file_list*3
-
-
-# In[42]:
-
-
 num_entry = len(file_list)
 num_entry_per_page = 6
 num_page = ceil(num_entry/num_entry_per_page)
@@ -282,23 +218,12 @@ num_page = ceil(num_entry/num_entry_per_page)
 if num_entry%num_entry_per_page != 0:
     diff = num_page*num_entry_per_page - num_entry
 
-
-# In[43]:
-
-
 addressbook = np.array(file_list + ['']*diff)
 addressbook = addressbook.reshape(num_page, num_entry_per_page)
-
-
-# In[44]:
-
 
 print('total number of contact entries:', num_entry)
 print('number of contacts per page:', num_entry_per_page)
 print('total number of pages:', num_page)
-
-
-# In[45]:
 
 
 header = """
@@ -321,10 +246,6 @@ header = """
 
 """
 
-
-# In[46]:
-
-
 f = open('addressbook.tex', 'w+')
 f.write(header)
 
@@ -342,10 +263,3 @@ for idx, page in enumerate(addressbook):
 
 f.write('\n\\end{document}')
 f.close()
-
-
-# In[ ]:
-
-
-
-
